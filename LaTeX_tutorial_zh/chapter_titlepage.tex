@@ -1,0 +1,127 @@
+\documentclass[class=NCU_thesis, crop=false]{standalone}
+% \let\orilabel\label % enable \ref in LTXexample
+\begin{document}
+
+% \begin{LTXexample}[style=LatexStyle,xleftmargin=0.5cm]
+% \end{LTXexample}
+% \begin{lstlisting}
+% \end{lstlisting}
+% \textbackslash{}
+
+\section{封面製作方法}
+
+製作封面的方法在常見的 \LaTeX 教學中，僅提到利用 \textbackslash{}maketitle 指令可以產生封面頁。但使用後會發現其產生的封面極其簡陋，往往不合我們的需求。這裡要介紹的就是產生自訂封面的基礎方法。
+
+
+在開始之前，讓我們靜下心想想，封面與內文的差異處：
+\begin{enumerate}
+    \item 不顯示、計算頁碼。
+    \item 字體大小、位置、對齊方式等等都是自由可變化的。
+\end{enumerate}
+
+第一個要求可以透過 titlepage 環境達成，其作用是表明這是封面(未必是首頁)，同時去除頁面的多欄(columns)設定、停用頁碼計數、修改頁面風格、另起新頁等等。
+\footnote{\textbackslash{}maketitle 指令其實就是利用 titlepage 定義一個非常簡單的格式，請參考 book.cls }
+
+第二個字體部份，與內文區大同小異。字的大小可用 \textbackslash{}Large 這類指令進行修改（或是\textbackslash{}fontsize\{size\}\{skip\}）。對齊方式常用的如 center 環境來置中文字。文字行的間距除了可以用 Word 常用方法～直接換行外，\LaTeX 中更好的做法是利用\textbackslash{}vspace*\{\} 指令強制插入一個固定的垂直空白(須指定單位如 \vspace*{3mm} )。
+\footnote{若使用不加星號的 \textbackslash{}vspace\{\} ，在頁首處將會失效，各位可斟酌使用。(\url{http://tex.stackexchange.com/q/76101})}
+另外 \TeX 也提供了一個可變長度的填充指令 \textbackslash{}vfill ，\TeX 會將頁面文字剩餘空間平均分配給生成頁面上所有的 \textbackslash{}vfill 。舉例來說，以下範例會讓文字出現在1/3的位置。
+\footnote{其實還有另一個指令 \textbackslash{}vfil 。\textbackslash{}vfil 與 \textbackslash{}vfill 作用相同但階層不同。\textbackslash{}vfill 較「高級」，能夠搶走\textbackslash{}vfil 的空間。詳見\url{http://tex.stackexchange.com/q/64756/111676}}
+\begin{lstlisting}
+\begin{titlepage}
+\vfill
+Here is 1/3 position.
+\vfill
+\vfill
+\end{titlepage}
+\end{lstlisting}
+
+除了上面的基本格式方法外，還有幾個小地方要注意，這裡我直接用我的樣板設定來講。
+\begin{lstlisting}
+\begin{document}
+
+\titlepageFontFamily
+\newgeometry{top=2.0cm, bottom=2.0cm, inner=2cm, outer=2cm}
+\begin{spacing}{1.0}
+    \begin{titlepage}
+        \null\vfill
+        \begin{center}
+        Text.
+        \end{center}
+    \end{titlepage}
+\end{spacing}
+\restoregeometry
+\normalfont % use main font
+\cleardoublepage 
+\end{lstlisting}
+其中要注意的指令及作用如下表：
+\begin{table}[!h]
+\begin{tabularx}{\textwidth}{lX}
+\textbackslash{}titlepageFontFamily     & 自訂指令，為了設定封面頁的字型風格，如 \textbackslash{}sffamily \\
+\textbackslash{}newgeometry\{\}         & 使用一個新的頁面規劃(頁邊寬度之類)，並暫存之前的設定。這指令常用在封面規劃與內文不同的情況，尤其是左右邊距不同的情況。 \\
+\textbackslash{}begin\{spacing\}\{1.0\} & 固定行距。因內文行距設定不應影響封面，所以這裡設定一個固定值。當然，若之前未更動行距設定，這裡也不用加。(spacing 環境需載入 setspace 套件) \\
+\textbackslash{}restoregeometry         & 復原至上一個頁面規劃。\\
+\textbackslash{}normalfont              & 復原至預設字型\\
+\textbackslash{}cleardoublepage         & 強制換至右頁（用於雙面模式下，單面模式就單純換面）。\\
+\end{tabularx}
+\end{table}
+
+
+上面這些就是使用純文字製作封面的方法了。若要仿造某個封面（如：某校提供的範例）或是做較為精細的版面設計，建議在\textbackslash{}documentclass 的選項加上 colorgrid ，可以顯示以 mm 為單位的網格用於對齊(由 eso-pic 套件提供)。如果想放入圖片、表格請直接用 \textbackslash{}includegraphics\{\} 與 tabular (毋須浮動環境figure、table)。若是要放入繪製圖、線段等等可以參考 tikz 繪圖。
+
+
+% 要製作一個封面，須要使用到 titlepage 環境(用\begin{...} \end{...}包起來)與 \vfill 指令。
+% titlepage 環境的作用是表明這是封面(未必是首頁)，同時去除頁面的多欄(columns)設定、停用頁碼計數、修改頁面風格、另起新頁等等。(     \maketitle 指令其實就是利用 titlepage 定義一個非常簡單的格式)
+% 
+% \vfill 指令則是在指令位置插入一個可變大小的垂直距離(空白)。 LaTeX 會將頁面文字剩餘空間平均分配給生成頁面上所有的 \vfill 。舉例來說，以下範例會讓文字出現在1/3的位置。
+% \begin{lstlisting}
+% \begin{titlepage}
+% \vfill
+% Here is 1/3 position.
+% \vfill
+% \vfill
+% \end{titlepage}
+% \end{lstlisting}
+% 
+% 接著還有 center 環境與 \vspace*{…} 指令可以控制文字位置。center 環境就是將文字置中，而 \vspace*{…} 則是強制插入一個固定的垂直空白(須指定單位如 \vspace*{3mm} )。
+% 稍微提一下，  若使用不加星號的 \vspace{…} ，在頁首處將會失效，各位可斟酌使用。(
+% http://tex.stackexchange.com/q/76101       )
+% 
+% 進一步了解
+% 除了上面的基本格式方法外，還有幾個小地方要注意，這裡我直接用我的樣板設定來講。
+% 
+
+
+
+\end{document}
+% 
+% \begin{titlepage}%
+%   \let\footnotesize\small
+%   \let\footnoterule\relax
+%   \let \footnote \thanks
+%   \null\vfil
+%   \vskip 60\p@
+%   \begin{center}%
+%     {\LARGE \@title \par}%
+%     \vskip 3em%
+%     {\large
+%      \lineskip .75em%
+%       \begin{tabular}[t]{c}%
+%         \@author
+%       \end{tabular}\par}%
+%       \vskip 1.5em%
+%     {\large \@date \par}%       % Set date in \large size.
+%   \end{center}\par
+%   \@thanks
+%   \vfil\null
+%   \end{titlepage}%
+%   \setcounter{footnote}{0}%
+%   \global\let\thanks\relax
+%   \global\let\maketitle\relax
+%   \global\let\@thanks\@empty
+%   \global\let\@author\@empty
+%   \global\let\@date\@empty
+%   \global\let\@title\@empty
+%   \global\let\title\relax
+%   \global\let\author\relax
+%   \global\let\date\relax
+%   \global\let\and\relax

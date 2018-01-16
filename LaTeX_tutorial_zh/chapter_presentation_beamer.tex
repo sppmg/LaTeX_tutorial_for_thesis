@@ -1,0 +1,112 @@
+\documentclass[class=NCU_thesis, crop=false]{standalone}
+% \let\orilabel\label % enable \ref in LTXexample
+
+\begin{document}
+
+% \begin{LTXexample}[style=LatexStyle,xleftmargin=0.5cm]
+% \end{LTXexample}
+% \begin{lstlisting}
+% \end{lstlisting}
+\let\tnote\tptabletnote
+\chapter{用 Beamer 做簡報}
+\LaTeX 除了排版書籍，製作簡報也是沒問題的。如果你厭倦了 GUI 介面的簡報軟體如 M\$ Office 的 PPT 或是 Libreoffice 的 impress 須要精密的滑鼠操控技術以及多圖下 Lag 到不行的體驗，那\LaTeX 簡報或許是你的救贖。不過對於常常須要建立箭頭指標等等的簡報類型，可能會讓你花費更多的時間，請依個人情況決定是否採用。
+
+其實政大數學系的蔡炎龍老師做過一份淺顯易懂的\href{http://yenlung.km.nccu.edu.tw/xms/read_attach.php?id=85}{簡報}。
+\footnote{由\url{http://yenlung.km.nccu.edu.tw/xms/read_attach.php?id=85}下載。}
+下面的內容算是自己的心得整理。
+
+\section{快速上手}
+
+\LaTeX 做簡報有很多種方法，其中最流行的就是 Beamer 。
+\footnote{Beamer 無論是\LaTeX 、 PDFLaTeX 或是 \XeLaTeX 都支援。其他製作方法有些限定了可用的編譯器，選用上須注意。}
+一份最簡單的（英文） Beamer 簡報如下：
+\begin{lstlisting}
+\documentclass[xetex,mathserif,serif]{beamer}
+% \usetheme{Warsaw}
+
+\title{Title of Presentation}
+\subtitle{Subtitle of Presentation}
+\author{sppmg}
+% \institute{}
+% \date{}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{Title of slide}
+Content goes here
+\end{frame}
+
+\begin{frame} %[plain], [shrink], [allowframebreaks], [fragile]
+\frametitle{Title of slide}
+\framesubtitle{Subtitle of slide}
+Content goes here
+\end{frame}
+
+\end{document}
+\end{lstlisting}
+這個例子將會生成3頁的簡報。各項解釋如下：
+\renewcommand*{\thead}[1]{\multicolumn{1}{|c|}{\bfseries #1}}
+\begin{table}[h]
+    \begin{threeparttable}
+         \caption{}
+        % --------------------------
+        \begin{tabularx}{\textwidth}{|l|X|} \hline
+\thead{行號或項目}   & \thead{解說} \\ \hline
+1     & 使用 beamer class 。選項使用 xetex 是因為我使用 \XeLaTeX ，非 \XeLaTeX 使用者請依手冊修正。 \\ \hline
+2     & 選擇簡報主題。 \tnote{1} \\ \hline
+4 $\sim$ 8  & 設定簡報題目、作者資訊 \\ \hline
+11    & 產生封面 \\ \hline
+\textbackslash{}begin\{frame\} $\sim$ \textbackslash{}end\{frame\} & 一頁簡報。 \\ \hline
+\textbackslash{}frametitle\{\}     & 各頁標題，亦可直接以\{\}加在\textbackslash{}begin\{frame\}後（第1參數）。 \\ \hline
+\textbackslash{}framesubtitle\{\}   & 各頁子標題，亦可直接以\{\}加在\textbackslash{}begin\{frame\}後（第2參數）。 \\ \hline
+frame選項 & 擇一使用或不用亦可 \\ \hline
+plain               & (經測試，有些頁面下方的附加資訊會消失，可略增頁面空間。) \\ \hline
+shrink              & 將一頁內容縮小至符合頁面大小。可用[shrink=5]來設定允許縮小比例。若內容小於頁面將向上對齊而非至中。 \\ \hline
+allowframebreaks    & 若超過頁面的話可以自動分成另一頁（頁標題自動附加數目）。 \\ \hline
+fragile             & 若需verb 、 verbatim 、 lstlisting 等原樣輸出指令，須用此選項。 \\ \hline
+%         http://nochair.net/posts/2011/05-05-fragile-latex-beamer.html
+        \end{tabularx}
+        % --------------------------
+        \begin{tablenotes}
+            \item [1] 完整主題截圖列表請見：\url{https://www.hartwork.org/beamer-theme-matrix/} 。 縱軸為主題，橫軸為色彩（\textbackslash{}usecolortheme\{\}）。
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\section{文字強調及色彩}
+一般 \LaTeX 文件中常用 \verb|\emph{}| 做\emph{強調文字}，但這指令在 Beamer 中會太斜，也不夠醒目。因此 Beamer 中另提供\verb|\structure{}|與\verb|alert{}| ，\verb|\structure{}|通常為粗體，顏色則視主題而定。
+\verb|alert{}|一般使用{\color{red}紅色}文字。
+
+若要使用其他顏色可以用 \verb|\color{color}| ，記得加上\{\}限制範圍（這方法與一般文件是一樣的）。
+\begin{LTXexample}[style=LatexStyle,xleftmargin=0.5cm]
+This is {\color{green} green color} word.
+\end{LTXexample}
+
+\section{文字方塊}
+Beamer 提供文字方塊，如 。但須注意預設的主題中並未定義各方塊樣式，請用\verb|\usetheme{}|更改主題。
+
+
+
+\section{分段顯示}
+這裡的「分段顯示」指的是在逐步切換過程中，一頁的文字會逐漸顯示出來。譬如說一個列表每按一次顯示一個項目。這個功能在 Beamer 中稱為 ``overlay'' 。
+
+\section{縮短編譯時間}
+% Improving Compilation Speed
+% \documentclass[draft]{beamer}
+% \includeonlyframes{⟨frame label list⟩}
+縮短編譯時間有兩種方法。一是使用 draft 選項，如同一般文件，draft 將不處理圖片及目錄。
+\begin{LTXexample}[style=LatexStyle,xleftmargin=0.5cm]
+\documentclass[draft]{beamer}
+\end{LTXexample}
+
+另一種方法類似一般文件的\verb|\includeonly{}|，僅編譯所標記下來的頁面。（但似乎無法配合 allowframebreaks ）
+\begin{LTXexample}[style=LatexStyle,xleftmargin=0.5cm]
+\includeonlyframes{current}
+\begin{frame}[label=current]{title}
+...
+\end{frame}
+\end{LTXexample}
+
+
+\end{document}
